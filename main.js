@@ -16,7 +16,7 @@ console.log( '-------------------' )
 
 micaCoin.minePendingTransactions( 'mica' )
 
-console.log( '\n balance of  mica is', micaCoin.getBalanceOfAdderss( 'mica' ) )
+console.log( '\n balance of  mica is', micaCoin.getBalanceOfAddress( 'mica' ) )
 
 
 

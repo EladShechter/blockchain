@@ -21,7 +21,7 @@ class Block {
         const header = this.header;
         while ( header.hash.substring( 0, difficulty ) !== Array( difficulty + 1 ).join( '0' ) ) {
             header.nonce++
-            header.hash = this.calculateHash();
+            header.hash = this.header.calculateHash();
         }
         console.log( 'Block mined ' + header.hash )
     }

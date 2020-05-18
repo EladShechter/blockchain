@@ -1,12 +1,12 @@
 const fs = require( "fs" );
 const Transaction = require( './Transaction' );
-const path = './mempool.json';
+const memPoolpath = './MemPool.json';
 
 class MemPoolDal {
     static getMemPool() {
-        const buffer = fs.readFileSync( path );
+        const buffer = fs.readFileSync( memPoolpath );
         if ( buffer.toString() ) {
-            const json = JSON.parse( rawdata );
+            const json = JSON.parse( buffer );
             return json.map( tx => Transaction.fromJSON( tx ) );
         }
 
@@ -31,13 +31,13 @@ class MemPoolDal {
 
     static appendToMemPool( transaction ) {
         const transactions = this.getMemPool();
-        transactions.push( transaction.toJSON() );
-        fthis.setMemPool( transactions );
+        transactions.push( transaction );
+        this.setMemPool( transactions );
     }
 
     static setMemPool( transactions ) {
         transactions = transactions.map( tx => tx.toJSON() )
-        fs.writeFileSync( path, JSON.stringify( transactions ) );
+        fs.writeFileSync( memPoolpath, JSON.stringify( transactions ) );
     }
 }
 
