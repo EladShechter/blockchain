@@ -1,5 +1,5 @@
 const config = require( "./Config" );
-const Keygenerator = require( "./Keygenerator" );
+const KeyGenerator = require( "./KeyGenerator" );
 
 class Transaction {
     constructor( fromAddress, toAddress, amount ) {
@@ -28,7 +28,7 @@ class Transaction {
            throw new Error( "no signature in this transaction" );
         }
 
-        const publicKey = Keygenerator.ec.keyFromPublic( this.fromAddress, "hex" );
+        const publicKey = KeyGenerator.ec.keyFromPublic( this.fromAddress, "hex" );
         return publicKey.verify(this.calculateHash(), this.signature);
     }
 

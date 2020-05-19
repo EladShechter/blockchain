@@ -4,7 +4,8 @@ const Configuration = {
     mineReward: 100,
     bloomFilterErrorRate: 0.04,
     proofOfWorkDifficulty: 2,
-    transactionsPerBlock: 4
+    transactionsPerBlock: 4,
+    initAmountPerWallet: 1000
 }
 
 module.exports = Configuration;

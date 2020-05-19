@@ -4,11 +4,13 @@ const MemPoolDal = require( "./MemPoolDal" );
 const config = require( "./Config" );
 
 class Blockchain {
-    constructor() {
-        this.chain = [ this._createGenesisBlock() ];
+    constructor(addresses) {
+        this.chain = [ this._createGenesisBlock( addresses ) ];
     }
-    _createGenesisBlock() {
-        return new Block( [], Date.now(), "0" )
+    _createGenesisBlock( addresses = [] ) {
+        const initTransactions = addresses.map(address => 
+            new Transaction(null, address, config.initAmountPerWallet));
+        return new Block( initTransactions, Date.now(), "0" );
     }
 
     getLatestBlock() {
@@ -28,18 +30,18 @@ class Blockchain {
     }
 
     getBalanceOfAddress( address ) {
-        let balance = 0
+        let balance = 0;
         for ( const block of this.chain ) {
             for ( const trans of block.transactions ) {
                 if ( trans.fromAddress === address ) {
-                    balance -= trans.amount
+                    balance -= trans.amount;
                 }
                 if ( trans.toAddress === address ) {
-                    balance += trans.amount
+                    balance += trans.amount;
                 }
             }
         }
-        return balance
+        return balance;
     }
 
     addPendTransaction( transaction ) {
