@@ -4,12 +4,12 @@ const MemPoolDal = require( "./MemPoolDal" );
 const config = require( "./Config" );
 
 class Blockchain {
-    constructor(addresses) {
+    constructor( addresses ) {
         this.chain = [ this._createGenesisBlock( addresses ) ];
     }
     _createGenesisBlock( addresses = [] ) {
-        const initTransactions = addresses.map(address => 
-            new Transaction(null, address, config.initAmountPerWallet));
+        const initTransactions = addresses.map( address =>
+            new Transaction( null, address, config.initAmountPerWallet ) );
         return new Block( initTransactions, Date.now(), "0" );
     }
 
@@ -55,19 +55,26 @@ class Blockchain {
     }
 
     isChainValid() {
-        for ( let i = 1; i < this.chain.length; i++ ) {
-            const currentBlock = this.chain[ i ];
+        // for ( let i = 1; i < this.chain.length; i++ ) {
+        //     const currentBlock = this.chain[ i ];
+        //     const previousBlock = this.chain[ i - 1 ];
+
+        //     if ( !currentBlock.hasValidTransactions() ||
+        //         currentBlock.hash !== currentBlock.calculateHash() ||
+        //         currentBlock.previousHash !== previousBlock.calculateHash()
+        //     ) {
+        //         return false;
+        //     }
+        // }
+        // return true;
+
+        return this.chain.slice( 1 ).every( ( currentBlock, i ) => {
             const previousBlock = this.chain[ i - 1 ];
+            return currentBlock.hasValidTransactions() &&
+                currentBlock.header.hash === currentBlock.header.calculateHash() &&
+                currentBlock.header.previousHash === previousBlock.header.calculateHash();
 
-            if ( !currentBlock.hasValidTransactions() ||
-                currentBlock.hash !== currentBlock.calculateHash() ||
-                currentBlock.previousHash !== previousBlock.calculateHash()
-            ) {
-                return false;
-            }
-
-        }
-        return true
+        } );
     }
 
     getBlockAndProofOfTransaction( transaction ) {
@@ -76,7 +83,7 @@ class Blockchain {
                 let proof = block.getTransactionProofPath( transaction );
                 if ( proof.length !== 0 ) {
                     return {
-                        block,
+                        block: block.header,
                         proof
                     };
                 }

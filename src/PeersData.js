@@ -3,6 +3,10 @@ class PeersData {
         return PeersData.data.find( item => item.port === port );
     }
 
+    static getPeerDataOfAddress( address ) {
+        return PeersData.data.find( item => item.address === address );
+    }
+
     static areAllAddressesSet() {
         return PeersData.data.every( data => !!data.address );
     }

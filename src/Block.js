@@ -29,7 +29,9 @@ class Block {
     hasValidTransactions() { 
         return this.transactions.every(tx => tx.isValid());
     }
-    hasTransaction() {
+    
+    hasTransaction( transaction ) {
+        transactionHash = transaction.calculateHash();
         return this.bloomFilter.has(transactionHash);
     }
 
