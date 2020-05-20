@@ -21,7 +21,7 @@ class Blockchain {
         const rewradTx = new Transaction( null, miningRewardAddress, config.mineReward );
         const transactions = MemPoolDal.getFirstTransactions( config.transactionsPerBlock );
         transactions.unshift( rewradTx );
-        let block = new Block( transactions, Date.now(), this.getLatestBlock().hash )
+        let block = new Block( transactions, Date.now(), this.getLatestBlock().header.hash )
 
         block.mineBlock( config.proofOfWorkDifficulty );
         console.log( 'block successfully mined' )

@@ -18,10 +18,9 @@ class LightWeightBlockchain {
 
     isChainValid() {
         return this.chain.slice( 1 ).every( ( currentBlock, i ) => {
-            const previousBlock = this.chain[ i - 1 ];
+            const previousBlock = this.chain[ i ];
             return currentBlock.hash === currentBlock.calculateHash() &&
                 currentBlock.previousHash === previousBlock.calculateHash();
-
         } );
     }
 

@@ -12,7 +12,7 @@ class PsvWallet extends Wallet {
         this.blockchain = new LightWeightBlockchain();
     }
 
-    // invoked by full node
+    // invoked by full node broadcast
     addNewBlock( blockJson ) {
         const block = BlockHeader.fromJson( blockJson );
         this.blockchain.appendBlock( block );
@@ -26,40 +26,56 @@ class PsvWallet extends Wallet {
         }
     }
 
-
-    // invoked by full node
-    responseTransactionProof( response ) {
-        if ( !response ) {
-            console.log( "the transaction is not in the blockchain" );
-        } else {
-            const block = response.block;
-            console.log( "check that the block exist in our chain..." );
-            if ( !this.blockchain.isBlockInChain( block ) ) {
-                console.log( "the block is not in our chain, we have got false response" );
-            } else {
-                console.log( "the block is in our chain, lets verify that the transaction is in it..." );
-                const transactionHash = Transaction.fromJSON( response.transaction ).calculateHash();
-                const proof = resonse.proof;
-                const isTransactionVerified = MerkleTree.verify( proof, transactionHash, block.MerkleRoot, config.hashFunction );
-                if ( isTransactionVerified ) {
-                    console.log( `the transaction was found in block ${block.hash} and have been verified` );
-                } else {
-                    console.log( "the transaction was not verified, we have got false response" );
-                }
-            }
-        }
-    }
-
     addNewTransaction( toAdress, amount ) {
-        const transaction = this.createTransaction( toAdress, amount );
-        _sendToFullNodeWallet( "addTransactionToMemPool", transaction.toJSON() );
+        return new Promise( resolve => {
+            const transaction = this.createTransaction( toAdress, amount );
+            this._requestFromFullNodeWallet( "addTransactionToMemPool", transaction.toJSON() );
+            this._listenForResponseFromFullNode( "addTransactionToMemPool", ( ) => {
+                console.log("the transaction had been added to mempool");
+                resolve( transaction );
+            } );
+        } );
     }
 
     checkIfMyTransactionIsInChain( transaction ) {
+        return new Promise( resolve => {
+            this._requestFromFullNodeWallet( "getBlockAndProofOfTransaction", transaction.toJSON() );
+            this._listenForResponseFromFullNode( "getBlockAndProofOfTransaction", ( response ) => {
+                if ( !response ) {
+                    console.log( "the transaction is not in the blockchain" );
+                    resolve( false );
+                } else {
+                    const block = response.block;
+                    console.log( "check that the block exist in our chain..." );
+                    if ( !this.blockchain.isBlockInChain( block ) ) {
+                        console.log( "the block is not in our chain, we have got false response" );
+                        resolve( false );
+                    } else {
+                        console.log( "the block is in our chain, lets verify that the transaction is in it..." );
+                        const transactionHash = Transaction.fromJSON( response.transaction ).calculateHash();
+                        const proof = resonse.proof;
+                        const isTransactionVerified = MerkleTree.verify( proof, transactionHash, block.MerkleRoot, config.hashFunction );
+                        if ( isTransactionVerified ) {
+                            console.log( `the transaction was found in block ${block.hash} and have been verified` );
+                            resolve( true );
+                        } else {
+                            console.log( "the transaction was not verified, we have got false response" );
+                            resolve( false );
+                        }
+                    }
+                }
+            } );
+        } );
 
     }
 
     getMyBalance() {
+         return new Promise( resolve => {
+             this._requestFromFullNodeWallet( "getBalanceOfAddress", this.address );
+             this._listenForResponseFromFullNode( "getBalanceOfAddress", (response) => {
+                 resolve( response );
+             } );
+         } );
 
     }
 
@@ -71,11 +87,17 @@ class PsvWallet extends Wallet {
         }
     }
 
-    _sendToFullNodeWallet( method, data ) {
-        this._sendToSocket( this.fullNodeSocket, method, data );
+    _requestFromFullNodeWallet( method, data ) {
+        this._sendToSocket( this.fullNodeSocket, method, data, "request" );
     }
 
-
+    _listenForResponseFromFullNode( methodName, fn ) {
+        this._listenForSocket( this.fullNodeSocket, ( message ) => {
+            if ( message.type = "response" && message.method === methodName ) {
+                fn( message.data );
+            }
+        } )
+    }
 }
 
 module.exports = PsvWallet;

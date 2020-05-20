@@ -1,5 +1,6 @@
 const KeyGenerator = require( './KeyGenerator' );
 const Transaction = require( './Transaction' );
+
 class Wallet {
     constructor() {
         this.keyGen = new KeyGenerator();
@@ -17,21 +18,34 @@ class Wallet {
 
     addSocketForPeer( socket, peerPort ) {
         this.socketsOfPeers.set( peerPort, socket );
+        this._listenForRequestsAndBroadcasts( socket, peerPort );
+    }
+
+    _listenForRequestsAndBroadcasts( socket, peerPort ) {
+        this._listenForSocket( socket, ( message ) => {
+            if ( ( message.type === "request" || message.type === "broadcast" ) &&
+                this[ message.method ] ) {
+
+                console.log( `${peerPort} ${ message.type} ${ message.method} method` );
+                this[ message.method ]( message.data, message.address );
+            }
+        } )
+    }
+
+    _listenForSocket( socket, fn ) {
         socket.on( "data", ( messageBuffer ) => {
             const messageJson = JSON.parse( messageBuffer.toString() );
-            if ( this[ messageJson.method ] ) {
-                console.log( `${peerPort} sent ${ messageJson.method} method` );
-                this[ messageJson.method ]( messageJson.data, messageJson.address );
-            }
+            fn( messageJson );
         } );
     }
 
-    _sendToSocket( socket, method, data ) {
-        socket.write( {
+    _sendToSocket( socket, method, data, type ) {
+        socket.write( JSON.stringify( {
+            type,
             method,
-            data: JSON.stringify( data ),
-            address = this.address
-        } );
+            data: data,
+            address: this.address
+        } ) );
     }
 }
 
