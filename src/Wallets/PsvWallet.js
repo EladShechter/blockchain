@@ -1,10 +1,10 @@
 const Wallet = require( "./Wallet" );
-const LightWeightBlockchain = require( "./LightWeightBlockchain" );
-const PeersData = require( "./PeersData" );
-const BlockHeader = require( "./BlockHeader" );
-const MerkleTree = require( "./MerkleTree" );
-const Transaction = require( "./Transaction" );
-const config = require( "./Config" );
+const LightWeightBlockchain = require( "../LightWeightBlockchain" );
+const PeersData = require( "../Network/PeersData" );
+const BlockHeader = require( "../BlockHeader" );
+const MerkleTree = require( "../Utils/MerkleTree" );
+const Transaction = require( "../Transaction" );
+const config = require( "../Config/Config" );
 
 class PsvWallet extends Wallet {
     constructor() {

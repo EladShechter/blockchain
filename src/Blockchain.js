@@ -1,7 +1,7 @@
 const Block = require( "./Block" );
 const Transaction = require( "./Transaction" );
 const MemPoolDal = require( "./MemPoolDal" );
-const config = require( "./Config" );
+const config = require( "./Config/Config" );
 
 class Blockchain {
     constructor( addresses ) {

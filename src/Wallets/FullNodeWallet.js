@@ -1,9 +1,9 @@
 const Wallet = require( "./Wallet" );
-const Blockchain = require( "./Blockchain" );
-const Transaction = require( "./Transaction" );
-const MemPoolDal = require( "./MemPoolDal" );
-const config = require( "./Config" );
-const PeersData = require( "./PeersData" );
+const Blockchain = require( "../Blockchain" );
+const Transaction = require( "../Transaction" );
+const MemPoolDal = require( "../MemPoolDal" );
+const config = require( "../Config/Config" );
+const PeersData = require( "../Network/PeersData" );
 
 class FullNodeWallet extends Wallet {
     constructor() {
@@ -57,6 +57,7 @@ class FullNodeWallet extends Wallet {
     getBalanceOfAddress( address, senderAddress ) {
         const balance = this.blockchain.getBalanceOfAddress( address );
         this._responseToPsvWallet( "getBalanceOfAddress", balance, senderAddress );
+        return balance;
     }
 
     _broadcastToPsvWallets( method, data ) {

@@ -1,7 +1,7 @@
-const createP2PNetwork = require( './src/P2PNetwork' );
+const createP2PNetwork = require( './src/Network/P2PNetwork' );
 // const Transaction = require( './src/Transaction' );
-const PeersData = require( './src/PeersData' );
-const FullNodeWallet = require( "./src/FullNodeWallet" );
+const PeersData = require( './src/Network/PeersData' );
+const FullNodeWallet = require( "./src/Wallets/FullNodeWallet" );
 
 // const key = new Keygenerator();
 // key.generateKeys();

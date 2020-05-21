@@ -1,5 +1,5 @@
-const config = require( "./Config" );
-const KeyGenerator = require( "./KeyGenerator" );
+const config = require( "./Config/Config" );
+const KeyGenerator = require( "./Utils/KeyGenerator" );
 
 class Transaction {
     constructor( fromAddress, toAddress, amount ) {

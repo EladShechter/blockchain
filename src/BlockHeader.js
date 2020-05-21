@@ -1,4 +1,4 @@
-const config = require( "./Config" );
+const config = require( "./Config/Config" );
 class BlockHeader {
     constructor( timestamp, merkleRoot, previousHash ) {
         this.timestamp = timestamp;

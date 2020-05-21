@@ -1,7 +1,7 @@
-const createP2PNetwork = require( './src/P2PNetwork' );
+const createP2PNetwork = require( './src/Network/P2PNetwork' );
 // const Transaction = require( './src/Transaction' );
-const PsvWallet = require( "./src/PsvWallet" );
-const PeersData = require( './src/PeersData' );
+const PsvWallet = require( "./src/Wallets/PsvWallet" );
+const PeersData = require( './src/Network/PeersData' );
 
 const wallet = new PsvWallet();
 const ports = PeersData.data.map( data => data.port );

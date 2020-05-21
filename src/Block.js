@@ -1,5 +1,5 @@
-const MerkleTree = require( "./MerkleTree" );
-const config = require( "./Config" );
+const MerkleTree = require( "./Utils/MerkleTree" );
+const config = require( "./Config/Config" );
 const BlockHeader = require( "./BlockHeader" );
 const {
     PartitionedBloomFilter
@@ -29,7 +29,7 @@ class Block {
     hasValidTransactions() { 
         return this.transactions.every(tx => tx.isValid());
     }
-    
+
     hasTransaction( transaction ) {
         transactionHash = transaction.calculateHash();
         return this.bloomFilter.has(transactionHash);

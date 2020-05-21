@@ -1,5 +1,5 @@
-const KeyGenerator = require( './KeyGenerator' );
-const Transaction = require( './Transaction' );
+const KeyGenerator = require( '../Utils/KeyGenerator' );
+const Transaction = require( '../Transaction' );
 
 class Wallet {
     constructor() {
