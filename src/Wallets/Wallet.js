@@ -34,8 +34,9 @@ class Wallet {
 
     _listenForSocket( socket, fn ) {
         socket.on( "data", ( messageBuffer ) => {
-            const messageJson = JSON.parse( messageBuffer.toString() );
-            fn( messageJson );
+            const messagesString = `[${messageBuffer.toString().replace( /}{/g, "},{" )}]`;
+            const messagesJson = JSON.parse( messagesString );
+            messagesJson.forEach(fn);
         } );
     }
 

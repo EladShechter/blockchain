@@ -18,14 +18,15 @@ class FullNodeWallet extends Wallet {
     addNewTransaction( toAdress, amount ) {
         const transaction = this.createTransaction( toAdress, amount );
         this.addTransactionToMemPool( transaction.toJSON() );
+        return transaction;
     }
 
-    // invoked by psv wallet request or by rhis wallet
+    // invoked by psv wallet request or by this wallet
     addTransactionToMemPool( transactionJson, senderAddress ) {
         this.blockchain.addPendTransaction( Transaction.fromJSON( transactionJson ) );
         console.log( "transaction added to mempool." );
 
-        this._responseToPsvWallet( "getBlockAndProofOfTransaction", true, senderAddress );
+        this._responseToPsvWallet( "addTransactionToMemPool", true, senderAddress );
         this.mineBlockIfMemPoolIsFull();
     }
 
@@ -43,14 +44,15 @@ class FullNodeWallet extends Wallet {
     getBlockAndProofOfTransaction( transactionJson, senderAddress ) {
         const transaction = Transaction.fromJSON( transactionJson );
         let result = this.blockchain.getBlockAndProofOfTransaction( transaction );
-        if ( result ) {
-            result = {
-                ...result,
-                transaction: transactionJson
-            };
-        }
+        // if ( result ) {
+        //     result = {
+        //         ...result,
+        //         transaction: transactionJson
+        //     };
+        // }
 
         this._responseToPsvWallet( "getBlockAndProofOfTransaction", result, senderAddress );
+        return result;
     }
 
     // invoked by psv wallet request
@@ -66,11 +68,11 @@ class FullNodeWallet extends Wallet {
         );
     }
 
-    _responseToPsvWallet( method, data, walletAddress ) {
+    _responseToPsvWallet( fromMethod, data, walletAddress ) {
         if ( walletAddress ) {
             const peerPort = PeersData.getPeerDataOfAddress( walletAddress ).port;
             const peerSocket = peerPort && this.socketsOfPeers.get( peerPort );
-            peerSocket && this._sendToSocket( peerSocket, method, data, "response" );
+            peerSocket && this._sendToSocket( peerSocket, fromMethod, data, "response" );
         }
     }
 

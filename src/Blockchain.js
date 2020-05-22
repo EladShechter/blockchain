@@ -6,6 +6,7 @@ const config = require( "./Config/Config" );
 class Blockchain {
     constructor( addresses ) {
         this.chain = [ this._createGenesisBlock( addresses ) ];
+        MemPoolDal.cleanMemPool();
     }
     _createGenesisBlock( addresses = [] ) {
         const initTransactions = addresses.map( address =>
@@ -55,19 +56,6 @@ class Blockchain {
     }
 
     isChainValid() {
-        // for ( let i = 1; i < this.chain.length; i++ ) {
-        //     const currentBlock = this.chain[ i ];
-        //     const previousBlock = this.chain[ i - 1 ];
-
-        //     if ( !currentBlock.hasValidTransactions() ||
-        //         currentBlock.hash !== currentBlock.calculateHash() ||
-        //         currentBlock.previousHash !== previousBlock.calculateHash()
-        //     ) {
-        //         return false;
-        //     }
-        // }
-        // return true;
-
         return this.chain.slice( 1 ).every( ( currentBlock, i ) => {
             const previousBlock = this.chain[ i - 1 ];
             return currentBlock.hasValidTransactions() &&

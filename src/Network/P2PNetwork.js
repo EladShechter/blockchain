@@ -17,18 +17,21 @@ function createP2PNetwork( myPort, peersPorts, wallet ) {
                 socket.write( JSON.stringify( {
                     method: announceAddressMethod,
                     data: wallet.address
-                } ) )
-                socket.on( "data", ( messageBuffer ) => {
+                } ) );
+
+                const setPeersAddressesListener = ( messageBuffer ) => {
                     const messageJson = JSON.parse( messageBuffer.toString() );
                     if ( messageJson.method === announceAddressMethod ) {
                         const peerData = PeersData.getPeerDataOfPort( peerPort );
                         peerData.address = messageJson.data;
                         if ( PeersData.areAllAddressesSet() ) {
                             console.log( "all peers connected and all adresses are set" );
+                            socket.removeListener( "data", setPeersAddressesListener );
                             resolve();
                         }
                     }
-                } );
+                }
+                socket.on( "data", setPeersAddressesListener );
                 console.log( `${myPort} is connected to port ${peerPort}` );
             } );
     } );

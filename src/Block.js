@@ -31,12 +31,12 @@ class Block {
     }
 
     hasTransaction( transaction ) {
-        transactionHash = transaction.calculateHash();
+        const transactionHash = transaction.calculateHash();
         return this.bloomFilter.has(transactionHash);
     }
 
     getTransactionProofPath(transaction) {
-        transactionHash = transaction.calculateHash();
+        const transactionHash = transaction.calculateHash();
         return this.merkleTree.getProofPath(transactionHash);
     }
 

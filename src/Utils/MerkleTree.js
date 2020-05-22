@@ -53,7 +53,6 @@ class MerkleTree {
     static verify( proof, leaf, root, hashFn ) {
         const calculatedRoot = proof.reduce(
             ( previousHash, currentProofItem ) => {
-                // console.log( previousHash, currentProofItem.data );
                 const toBeHashed = currentProofItem.isRight ?
                     previousHash + currentProofItem.data :
                     currentProofItem.data + previousHash;

@@ -5,11 +5,16 @@ const BlockHeader = require( "../BlockHeader" );
 const MerkleTree = require( "../Utils/MerkleTree" );
 const Transaction = require( "../Transaction" );
 const config = require( "../Config/Config" );
+const events = require( "events" );
 
 class PsvWallet extends Wallet {
     constructor() {
         super();
         this.blockchain = new LightWeightBlockchain();
+        this.eventEmitter = new events.EventEmitter();
+        this.blockAddedEvent = "blockAdded";
+        this.blockChainDefer = this.defer();
+        this.blockchainIsReady = this.blockChainDefer.promise;
     }
 
     // invoked by full node broadcast
@@ -21,6 +26,13 @@ class PsvWallet extends Wallet {
         console.log( "check that all the chain is valid..." );
         if ( this.blockchain.isChainValid() ) {
             console.log( "chain is valid" );
+            setTimeout( () => {
+                this.eventEmitter.emit( this.blockAddedEvent, block );
+            } )
+
+            // if ( this.blockchain.chain.length === 1 ) {
+            //     this.blockChainDefer.resolve( block );
+            // }
         } else {
             console.log( "chain is not valid" );
         }
@@ -30,8 +42,8 @@ class PsvWallet extends Wallet {
         return new Promise( resolve => {
             const transaction = this.createTransaction( toAdress, amount );
             this._requestFromFullNodeWallet( "addTransactionToMemPool", transaction.toJSON() );
-            this._listenForResponseFromFullNode( "addTransactionToMemPool", ( ) => {
-                console.log("the transaction had been added to mempool");
+            this._listenForResponseFromFullNode( "addTransactionToMemPool", () => {
+                console.log( "the transaction had been added to mempool" );
                 resolve( transaction );
             } );
         } );
@@ -52,9 +64,9 @@ class PsvWallet extends Wallet {
                         resolve( false );
                     } else {
                         console.log( "the block is in our chain, lets verify that the transaction is in it..." );
-                        const transactionHash = Transaction.fromJSON( response.transaction ).calculateHash();
-                        const proof = resonse.proof;
-                        const isTransactionVerified = MerkleTree.verify( proof, transactionHash, block.MerkleRoot, config.hashFunction );
+                        const transactionHash = transaction.calculateHash();
+                        const proof = response.proof;
+                        const isTransactionVerified = MerkleTree.verify( proof, transactionHash, block.merkleRoot, config.hashFunction );
                         if ( isTransactionVerified ) {
                             console.log( `the transaction was found in block ${block.hash} and have been verified` );
                             resolve( true );
@@ -70,12 +82,12 @@ class PsvWallet extends Wallet {
     }
 
     getMyBalance() {
-         return new Promise( resolve => {
-             this._requestFromFullNodeWallet( "getBalanceOfAddress", this.address );
-             this._listenForResponseFromFullNode( "getBalanceOfAddress", (response) => {
-                 resolve( response );
-             } );
-         } );
+        return new Promise( resolve => {
+            this._requestFromFullNodeWallet( "getBalanceOfAddress", this.address );
+            this._listenForResponseFromFullNode( "getBalanceOfAddress", ( response ) => {
+                resolve( response );
+            } );
+        } );
 
     }
 
@@ -97,6 +109,16 @@ class PsvWallet extends Wallet {
                 fn( message.data );
             }
         } )
+    }
+
+    defer() {
+        var deferred = {};
+        var promise = new Promise( ( resolve, reject ) => {
+            deferred.resolve = resolve;
+            deferred.reject = reject;
+        } );
+        deferred.promise = promise;
+        return deferred;
     }
 }
 

@@ -1,6 +1,6 @@
 const fs = require( "fs" );
 const Transaction = require( './Transaction' );
-const memPoolpath = './MemPool.json';
+const memPoolpath = './demo/MemPool.json';
 
 class MemPoolDal {
     static getMemPool() {
@@ -38,6 +38,10 @@ class MemPoolDal {
     static setMemPool( transactions ) {
         transactions = transactions.map( tx => tx.toJSON() )
         fs.writeFileSync( memPoolpath, JSON.stringify( transactions ) );
+    }
+
+    static cleanMemPool() {
+        this.setMemPool([]);
     }
 }
 

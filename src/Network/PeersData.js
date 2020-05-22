@@ -1,5 +1,5 @@
 class PeersData {
-    static getPeerDataOfPort(port) {
+    static getPeerDataOfPort( port ) {
         return PeersData.data.find( item => item.port === port );
     }
 
@@ -12,24 +12,27 @@ class PeersData {
     }
 
     static getFullNodePeerData() {
-        return PeersData.data.find( item => item.type === "FullNode" );
+        return PeersData.data.find( item => item.type === PeersData.Types.FullNode );
     }
 }
-
+PeersData.Types = {
+    FullNode: "FullNode",
+    PSV: "PSV"
+}
 PeersData.data = [ {
         port: 4001,
         address: null,
-        type: "FullNode"
+        type: PeersData.Types.FullNode
     },
     {
         port: 4002,
         address: null,
-        type: "PSV"
+        type: PeersData.Types.PSV
     },
     {
         port: 4003,
         address: null,
-        type: "PSV"
+        type: PeersData.Types.PSV
     }
 ];
 
