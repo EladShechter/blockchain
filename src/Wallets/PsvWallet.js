@@ -3,7 +3,6 @@ const LightWeightBlockchain = require( "../LightWeightBlockchain" );
 const PeersData = require( "../Network/PeersData" );
 const BlockHeader = require( "../BlockHeader" );
 const MerkleTree = require( "../Utils/MerkleTree" );
-const Transaction = require( "../Transaction" );
 const config = require( "../Config/Config" );
 const events = require( "events" );
 
@@ -13,8 +12,6 @@ class PsvWallet extends Wallet {
         this.blockchain = new LightWeightBlockchain();
         this.eventEmitter = new events.EventEmitter();
         this.blockAddedEvent = "blockAdded";
-        this.blockChainDefer = this.defer();
-        this.blockchainIsReady = this.blockChainDefer.promise;
     }
 
     // invoked by full node broadcast
@@ -29,10 +26,6 @@ class PsvWallet extends Wallet {
             setTimeout( () => {
                 this.eventEmitter.emit( this.blockAddedEvent, block );
             } )
-
-            // if ( this.blockchain.chain.length === 1 ) {
-            //     this.blockChainDefer.resolve( block );
-            // }
         } else {
             console.log( "chain is not valid" );
         }
@@ -108,17 +101,7 @@ class PsvWallet extends Wallet {
             if ( message.type = "response" && message.method === methodName ) {
                 fn( message.data );
             }
-        } )
-    }
-
-    defer() {
-        var deferred = {};
-        var promise = new Promise( ( resolve, reject ) => {
-            deferred.resolve = resolve;
-            deferred.reject = reject;
         } );
-        deferred.promise = promise;
-        return deferred;
     }
 }
 

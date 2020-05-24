@@ -31,9 +31,9 @@ class FullNodeWallet extends Wallet {
     }
 
     mineBlockIfMemPoolIsFull() {
-        console.log( "check if there are enough transactions to mine..." );
+        console.log( "check if there is enough transactions to mine..." );
         if ( MemPoolDal.getTransactionsAmount() >= config.transactionsPerBlock ) {
-            console.log( "there are enough transactions to mine. lets mine the block..." );
+            console.log( "there is enough transactions to mine. lets mine the block..." );
             this.blockchain.minePendingTransactions( this.address );
             console.log( "block mined. send to all the wallets" );
             this._broadcastToPsvWallets( "addNewBlock", this.blockchain.getLatestBlock().header );
@@ -44,12 +44,6 @@ class FullNodeWallet extends Wallet {
     getBlockAndProofOfTransaction( transactionJson, senderAddress ) {
         const transaction = Transaction.fromJSON( transactionJson );
         let result = this.blockchain.getBlockAndProofOfTransaction( transaction );
-        // if ( result ) {
-        //     result = {
-        //         ...result,
-        //         transaction: transactionJson
-        //     };
-        // }
 
         this._responseToPsvWallet( "getBlockAndProofOfTransaction", result, senderAddress );
         return result;
